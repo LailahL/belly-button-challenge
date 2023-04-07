@@ -5,54 +5,122 @@ console.log("Data Promise:", dataPromise);
 
 
 
+dataPromise.then(function(data) {
+  const dropdownMenu = d3.select("#selDataset");
+  data.names.forEach(function (dataname) {
+    dropdownMenu.append("option").text(dataname).property("value", dataname);
+  })
 
-function init() {
-    let data1 = [{
-      x: [],
-      y: [],
-      text:[],
-      type: "bar",
-      orientation: "h"
-    }];
+  d3.selectAll("#selDataset").on("change", fetchData);
+  function fetchData() {
+  let selection=document.getElementById("selDataset").value;
+
+  function init(jdata) {
+    var samples=jdata.samples;
+    var filtered=samples.filter(metData=>
+      metData.id==selection);
+    var allDATA=filtered[0];
+
+    var metaData=jdata.metadata;
+    var filteredMeta=metaData.filter(metametData=>
+      metametData.id==selection);
+    var allmetaDATA=filteredMeta[0];
+
   
-    let layout = {
-      l: 50,
-      r: 50,
-      t: 50,
-      b: 200,
-
-    };
-  
-    Plotly.newPlot("bar", data1, layout);
-}
-
-  d3.selectAll("#selDataset").on("change", updatePlotly);
-  function updatePlotly() {
-    let dropdownMenu = d3.select("#selDataset");
-    let dataset = [];
-    let x = [];
-    let y = [];
-    let text = [];
-    dataPromise.then(function(data) {
-      for (i=0;i<data.samples.length;i++) {
-        for (j=0;j<data.samples[0].otu_ids.length;j++) {
-        let testSubjectID = data.samples[i].id;
-        dataset.push("<option>"+ data.names[i]+"</option>");
-          if (dataset===testSubjectID) {  
-            let sample_values = parseInt(data.samples[i].sample_values[j]);
-            x.push(sample_values);
-            let otu_ids= "OTU " + data.samples[i].otu_ids[j];
-            y.push(otu_ids)
-            let otu_labels = data.samples[i].sample_values[j];
-            text.push(otu_labels)
-            console.log(data.samples[i]);
-          }}
-      }
-    });
-    document.getElementById("#selDataset").innerHTML=dataset.join("");
+  function createbarh(){
+    var data1 = [{
+     x: allDATA.sample_values.slice(0,10).reverse(),
+     y: allDATA.otu_ids.map(otuid=>`OTU ${otuid}`).slice(0,10).reverse(),
+     text:allDATA.otu_labels.slice(0,10).reverse(),
+     type: "bar",
+     orientation: "h"
+   }];
  
-        Plotly.restyle("bar", "x", [x]);
-        Plotly.restyle("bar", "y", [y]);
-}
+   const layout = {
+     l: 50,
+     r: 50,
+     t: 50,
+     b: 50,
+
+   };
+   
+   Plotly.newPlot("bar", data1, layout);
+    }
+    createbarh();
+
+  function createbubbleChart(){
+    var data2 = [{
+      x: allDATA.otu_ids,
+      y: allDATA.sample_values,
+      text:allDATA.otu_labels,
+      type:"scatter",
+      mode: "markers",
+      marker: {
+        size: allDATA.sample_values,
+        color:allDATA.otu_ids,
+        }
+        }];
+    
+      const layout2 = {
+        xaxis:{ 
+          title:"OTU ID",
+        }
+   
+      };
       
-    init();
+      Plotly.newPlot("bubble", data2, layout2);
+      }
+    createbubbleChart();
+
+    function demoGraphy() {
+      let PANEL = d3.select("#sample-metadata");
+      console.log("here")
+     
+      PANEL.html("");
+      for (key in allmetaDATA){
+        PANEL.append("h6").text(`${key.toUpperCase()}: ${allmetaDATA[key]}`);
+      }
+      
+      var data = [
+  {
+    domain: { x: [0, 1], y: [0, 1] },
+    value: 450,
+    title: { text: "Speed" },
+    type: "indicator",
+    mode: "gauge+number",
+    delta: { reference: 400 },
+    gauge: { axis: { range: [null, 500] } }
+      }
+    ];
+
+    var layout = { width: 600, height: 400 };
+    Plotly.newPlot('myDiv', data, layout);
+
+
+    }demoGraphy();
+
+    function buildGauge() {
+
+      var data4 = [
+        {
+          domain: { x: [0, 1], y: [0, 1] },
+          value: allmetaDATA.wfreq,
+          title: { text: "Belly Button Washing Frequency" },
+          type: "indicator",
+          mode: "gauge+number",
+          delta: { reference: 9 },
+          gauge: { axis: { range: [null, 10] } }
+        }
+      ];
+      
+      var layout4 = { width: 600, height: 400 };
+      let gauge1=document.getElementById("gauge");
+      Plotly.newPlot(gauge1, data4, layout4);
+
+    }buildGauge();
+      
+      }init(data);
+    }})
+
+  
+ 
