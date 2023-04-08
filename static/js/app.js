@@ -81,46 +81,28 @@ dataPromise.then(function(data) {
         PANEL.append("h6").text(`${key.toUpperCase()}: ${allmetaDATA[key]}`);
       }
       
-      var data = [
-  {
-    domain: { x: [0, 1], y: [0, 1] },
-    value: 450,
-    title: { text: "Speed" },
-    type: "indicator",
-    mode: "gauge+number",
-    delta: { reference: 400 },
-    gauge: { axis: { range: [null, 500] } }
-      }
-    ];
-
-    var layout = { width: 600, height: 400 };
-    Plotly.newPlot('myDiv', data, layout);
-
-
-    }demoGraphy();
+     }demoGraphy();
 
     function buildGauge() {
+      console.log("gauge")
+    var data4 = [
+      {
+        domain: { x: [0, 1], y: [0, 1] },
+        value: allmetaDATA.wfreq,
+        title: { text: "Belly Button Washing Frequency" },
+        type: "indicator",
+        mode: "gauge+number",
+        delta: { reference: 9 },
+        gauge: { axis: { range: [null, 10] } }
+      }
+    ];
+    
+    var layout4 = { width: 600, height: 400 };
+    
+    Plotly.newPlot("gauge", data4, layout4);
 
-      var data4 = [
-        {
-          domain: { x: [0, 1], y: [0, 1] },
-          value: allmetaDATA.wfreq,
-          title: { text: "Belly Button Washing Frequency" },
-          type: "indicator",
-          mode: "gauge+number",
-          delta: { reference: 9 },
-          gauge: { axis: { range: [null, 10] } }
-        }
-      ];
+  }buildGauge();
+   
       
-      var layout4 = { width: 600, height: 400 };
-      let gauge1=document.getElementById("gauge");
-      Plotly.newPlot(gauge1, data4, layout4);
-
-    }buildGauge();
-      
-      }init(data);
-    }})
-
-  
- 
+    }init(data);
+  }})
